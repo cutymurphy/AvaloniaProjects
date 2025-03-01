@@ -1,0 +1,12 @@
+.idea/
+*.suo
+*.user
+*.sln.docstates
+.vscode/
+bin/
+obj/
+*.cache
+*.log
+
+# Avalonia
+*.Designer.cs
