@@ -12,9 +12,22 @@
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <TabControl>
 
+        <!-- Our Simple ViewModel -->
+        <TabItem Header="Simple ViewModel">
+            <StackPanel DataContext="{Binding SimpleViewModel}" Spacing="10">
+                <TextBlock>Enter value:</TextBlock>
+                <TextBox Text="{Binding ValueData}" />
+                <TextBox Text="{Binding Greeting, Mode=OneWay}"
+                         IsReadOnly="True"
+                         FontWeight="Bold" />
+                <Button x:Name="addButton" Content="Add" IsDefault="True" Command="{Binding addButtonClickCommand}" />
+                <Button x:Name="delButton" Content="Delete" IsDefault="True" Command="{Binding delButtonClickCommand}" />
+            </StackPanel>
+        </TabItem>
+    </TabControl>
 </Window>
