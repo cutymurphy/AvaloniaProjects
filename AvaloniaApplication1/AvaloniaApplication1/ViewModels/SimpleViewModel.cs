@@ -1,17 +1,15 @@
-using Avalonia.Interactivity;
 using System;
+using AvaloniaApplication1.Models;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
-using AvaloniaApplication1.Models;
 
 namespace AvaloniaApplication1.ViewModels
 {
-
     public class SimpleViewModel : INotifyPropertyChanged
     {
-        workList<int> myList = new workList<int>();
-
+        private Queue<int> queue = new Queue<int>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -20,71 +18,98 @@ namespace AvaloniaApplication1.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // ---- Add some Properties ----
-
-        private string? _ValueData; // This is our backing field for Name
-   
+        private string? _ValueData;
 
         public string? ValueData
         {
-            get 
-            {
-                return _ValueData; 
-            }
+            get => _ValueData;
             set
             {
-                // We only want to update the UI if the Name actually changed, so we check if the value is actually new
                 if (_ValueData != value)
                 {
-                    // 1. update our backing field
                     _ValueData = value;
-
                     RaisePropertyChanged();
-                    RaisePropertyChanged(nameof(Greeting));
                 }
             }
         }
-       
 
-        // Greeting will change based on a Name.
-        public string Greeting
+        public int QueueCount => queue.Count;
+        public bool QueueIsEmpty => queue.IsEmpty;
+        public int QueueCurrentElement => queue.CurrentElement;
+        public string QueueCurrentElementDisplay => queue.CurrentElementDisplay;
+
+        public string QueueContent => "Queue: " + queue.Print();
+
+        public ICommand EnqueueCommand { get; }
+        public ICommand DequeueCommand { get; }
+        public ICommand ClearCommand { get; }
+
+        private string? _errorMessage;
+
+        public string? ErrorMessage
         {
-            get
+            get => _errorMessage;
+            set
             {
-                return "Show List :" + myList.Print();
+                if (_errorMessage != value)
+                {
+                    _errorMessage = value;
+                    RaisePropertyChanged(nameof(ErrorMessage));
+                }
             }
         }
 
-        public ICommand addButtonClickCommand { get; }
-
         public SimpleViewModel()
         {
-            addButtonClickCommand = new RelayCommand(addOnButtonClick);
-            delButtonClickCommand = new RelayCommand(delOnButtonClick);
+            EnqueueCommand = new RelayCommand(Enqueue);
+            DequeueCommand = new RelayCommand(Dequeue);
+            ClearCommand = new RelayCommand(Clear);
         }
 
-        private void addOnButtonClick()
+        private void Enqueue()
         {
-            int x = Int32.Parse(_ValueData);
-            myList.Add(x);
-            RaisePropertyChanged();
-            RaisePropertyChanged(nameof(Greeting));
+            if (int.TryParse(_ValueData, out int value))
+            {
+                queue.Enqueue(value);
+                ErrorMessage = null;
+                UpdateQueueState();
+            }
         }
 
-        public ICommand delButtonClickCommand { get; }
-
-        private void delOnButtonClick()
+        private void Dequeue()
         {
-            int x = Int32.Parse(_ValueData);
-            myList.Remove(x);
-            RaisePropertyChanged();
-            RaisePropertyChanged(nameof(Greeting));
+            ErrorMessage = null;
+            if (QueueIsEmpty)
+            {
+                ErrorMessage = "Queue is empty. Unable to delete element.";
+                ClearErrorMessageAfterDelay(3000);
+            }
+            else
+            {
+                queue.Dequeue();
+                UpdateQueueState();
+            }
         }
 
-
-        protected virtual void OnPropertyChanged(string propertyName)
+        private void Clear()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            queue.Clear();
+            UpdateQueueState();
+        }
+
+        private void UpdateQueueState()
+        {
+            RaisePropertyChanged(nameof(QueueCount));
+            RaisePropertyChanged(nameof(QueueIsEmpty));
+            RaisePropertyChanged(nameof(QueueCurrentElement));
+            RaisePropertyChanged(nameof(QueueCurrentElementDisplay));
+            RaisePropertyChanged(nameof(QueueContent));
+        }
+
+        private async void ClearErrorMessageAfterDelay(int delayMilliseconds)
+        {
+            await Task.Delay(delayMilliseconds);
+            ErrorMessage = null;
         }
     }
 
@@ -103,5 +128,4 @@ namespace AvaloniaApplication1.ViewModels
         public void Execute(object parameter) => _execute();
         public event EventHandler CanExecuteChanged;
     }
-
 }
