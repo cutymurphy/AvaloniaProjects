@@ -18,16 +18,16 @@ namespace AvaloniaApplication2.Services
             rootFolder.Add(subFolder);
             rootFolder.Add(file2);
 
+            CopyItem(file2, subFolder);
+
             FileSystemItems.Add(rootFolder);
         }
 
-        // Метод для копирования элемента
         public void CopyItem(FileSystemItem item, Folder destination)
         {
             FileSystemItem.Copy(item, destination);
         }
 
-        // Метод для перемещения элемента
         public void MoveItem(FileSystemItem item, Folder destination)
         {
             FileSystemItem.Move(item, destination);

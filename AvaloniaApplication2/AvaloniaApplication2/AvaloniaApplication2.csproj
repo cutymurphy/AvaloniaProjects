@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
-        <Folder Include="Videos\" />
+        <Folder Include="Screenshoots\" />
     </ItemGroup>
 
     <ItemGroup>

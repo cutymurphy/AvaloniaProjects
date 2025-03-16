@@ -11,7 +11,7 @@
         Title="File System App">
 
     <Design.DataContext>
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
     <Grid>
@@ -37,4 +37,4 @@
             </TreeView.DataTemplates>
         </TreeView>
     </Grid>
-</Window>   
+</Window>
