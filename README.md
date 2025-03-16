@@ -3,5 +3,7 @@
 ### avalonia version - 11.2.1
 ---------------------
   
-[Task 1](https://github.com/cutymurphy/AvaloniaProjects/tree/master/AvaloniaApplication1)
+### [Task 1](https://github.com/cutymurphy/AvaloniaProjects/tree/master/AvaloniaApplication1)
 (вариант 2 - класс «Очередь»)
+### [Task 2](https://github.com/cutymurphy/AvaloniaProjects/tree/master/AvaloniaApplication2)
+(вариант 4 - базовый класс: элемент файловой системы)
