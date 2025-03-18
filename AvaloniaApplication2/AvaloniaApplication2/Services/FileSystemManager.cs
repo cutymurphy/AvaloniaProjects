@@ -18,19 +18,9 @@ namespace AvaloniaApplication2.Services
             rootFolder.Add(subFolder);
             rootFolder.Add(file2);
 
-            CopyItem(file2, subFolder);
+            FileSystemItem.Copy(file2, subFolder);
 
             FileSystemItems.Add(rootFolder);
-        }
-
-        public void CopyItem(FileSystemItem item, Folder destination)
-        {
-            FileSystemItem.Copy(item, destination);
-        }
-
-        public void MoveItem(FileSystemItem item, Folder destination)
-        {
-            FileSystemItem.Move(item, destination);
         }
     }
 }

@@ -35,9 +35,7 @@ namespace AvaloniaApplication1.ViewModels
 
         public int QueueCount => queue.Count;
         public bool QueueIsEmpty => queue.IsEmpty;
-        public int QueueCurrentElement => queue.CurrentElement;
-        public string QueueCurrentElementDisplay => queue.CurrentElementDisplay;
-
+        public string QueueCurrentElement => queue.CurrentElement;
         public string QueueContent => "Queue: " + queue.Print();
 
         public ICommand EnqueueCommand { get; }
@@ -93,8 +91,11 @@ namespace AvaloniaApplication1.ViewModels
 
         private void Clear()
         {
-            queue.Clear();
-            UpdateQueueState();
+            if (!QueueIsEmpty)
+            {
+                queue.Clear();
+                UpdateQueueState();
+            }
         }
 
         private void UpdateQueueState()
@@ -102,7 +103,6 @@ namespace AvaloniaApplication1.ViewModels
             RaisePropertyChanged(nameof(QueueCount));
             RaisePropertyChanged(nameof(QueueIsEmpty));
             RaisePropertyChanged(nameof(QueueCurrentElement));
-            RaisePropertyChanged(nameof(QueueCurrentElementDisplay));
             RaisePropertyChanged(nameof(QueueContent));
         }
 

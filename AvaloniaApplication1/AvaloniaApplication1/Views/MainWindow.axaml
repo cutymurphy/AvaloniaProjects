@@ -25,7 +25,7 @@
                         <SolidColorBrush Color="Purple" />
                     </TextBlock.Foreground>
                 </TextBlock>
-                <TextBlock Text="{Binding QueueCurrentElementDisplay, StringFormat='Current Element: {0}'}" />
+                <TextBlock Text="{Binding QueueCurrentElement, StringFormat='Current Element: {0}'}" />
                 <TextBlock Text="{Binding QueueCount, StringFormat='Count: {0}'}" />
                 <TextBlock Text="{Binding QueueIsEmpty, StringFormat='Is Empty: {0}'}" />
                 <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" />

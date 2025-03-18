@@ -10,13 +10,12 @@ namespace AvaloniaApplication1.Models
 
         public int Count => count;
         public bool IsEmpty => count == 0;
-        public T CurrentElement => head != null ? head.Data : default(T);
-        public string CurrentElementDisplay => head != null ? head.Data.ToString() : "None";
+        public string CurrentElement => head != null ? head.Data.ToString() : "None";
 
         public void Enqueue(T data)
         {
             Node<T> newNode = new Node<T>(data);
-            if (tail == null)
+            if (IsEmpty)
             {
                 head = tail = newNode;
             }
@@ -29,14 +28,13 @@ namespace AvaloniaApplication1.Models
             count++;
         }
 
-        public T Dequeue()
+        public void Dequeue()
         {
-            if (head == null)
+            if (IsEmpty)
             {
                 throw new InvalidOperationException("Queue is empty");
             }
 
-            T data = head.Data;
             head = head.Next;
             if (head == null)
             {
@@ -44,7 +42,6 @@ namespace AvaloniaApplication1.Models
             }
 
             count--;
-            return data;
         }
 
         public void Clear()
