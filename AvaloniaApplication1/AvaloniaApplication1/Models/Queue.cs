@@ -2,18 +2,6 @@ using System;
 
 namespace AvaloniaApplication1.Models
 {
-    class Node<T>
-    {
-        public T Data { get; set; }
-        public Node<T> Next { get; set; }
-
-        public Node(T data)
-        {
-            Data = data;
-            Next = null;
-        }
-    }
-
     class Queue<T>
     {
         private Node<T> head;
@@ -37,6 +25,7 @@ namespace AvaloniaApplication1.Models
                 tail.Next = newNode;
                 tail = newNode;
             }
+
             count++;
         }
 
@@ -53,6 +42,7 @@ namespace AvaloniaApplication1.Models
             {
                 tail = null;
             }
+
             count--;
             return data;
         }
@@ -72,6 +62,7 @@ namespace AvaloniaApplication1.Models
                 str += current.Data + " ";
                 current = current.Next;
             }
+
             return str;
         }
     }
