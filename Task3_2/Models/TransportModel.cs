@@ -9,8 +9,8 @@ namespace Task3_2.Models
     {
         public double RoadY { get; } = 200;
         public double RoadHeight { get; } = 100;
-        public double SidewalkTopY { get; } = 160; // Верхний тротуар
-        public double SidewalkBottomY { get; } = 300; // Нижний тротуар
+        public double SidewalkTopY { get; } = 160;
+        public double SidewalkBottomY { get; } = 300;
 
         public ObservableCollection<Vehicle> Vehicles { get; }
         public ObservableCollection<IPassenger> Passengers { get; }
@@ -27,8 +27,8 @@ namespace Task3_2.Models
             Passengers = new ObservableCollection<IPassenger>();
             Stops = new ObservableCollection<Stop>
             {
-                new Stop(this, 450, SidewalkTopY, false), // Для движения справа налево
-                new Stop(this, 450, SidewalkBottomY, true) // Для движения слева направо
+                new Stop(this, 450, SidewalkTopY, false),
+                new Stop(this, 450, SidewalkBottomY, true)
             };
 
             _updateTimer = new Timer(50);
@@ -63,7 +63,6 @@ namespace Task3_2.Models
         private void SpawnVehicle(object? sender, ElapsedEventArgs e)
         {
             if (Vehicles.Count >= 10) return;
-            // 30% вероятность автобуса, 70% — машины
             Vehicle vehicle = _random.NextDouble() < 0.3 ? new Bus(this) : new Car(this);
             Vehicles.Add(vehicle);
         }
@@ -72,26 +71,21 @@ namespace Task3_2.Models
         {
             if (Passengers.Count >= 8) return;
 
-            Type[] passengerTypes = { typeof(RegularPassenger), typeof(WaitingPassenger) };
-            Type passengerType = passengerTypes[_random.Next(0, passengerTypes.Length)];
+            bool spawnWaitingPassenger = _random.NextDouble() < 0.6;
+            Type passengerType = spawnWaitingPassenger ? typeof(WaitingPassenger) : typeof(RegularPassenger);
+
             var passenger = (IPassenger)Activator.CreateInstance(passengerType, this);
             Passengers.Add(passenger);
         }
 
         public void RemoveVehicle(Vehicle vehicle)
         {
-            if (Vehicles.Contains(vehicle))
-            {
-                Vehicles.Remove(vehicle);
-            }
+            Vehicles.Remove(vehicle);
         }
 
         public void RemovePassenger(IPassenger passenger)
         {
-            if (Passengers.Contains(passenger))
-            {
-                Passengers.Remove(passenger);
-            }
+            Passengers.Remove(passenger);
         }
 
         public void Dispose()

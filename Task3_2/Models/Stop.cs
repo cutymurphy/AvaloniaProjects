@@ -4,7 +4,6 @@ namespace Task3_2.Models
 {
     public class Stop
     {
-        private readonly TransportModel _model;
         public double X { get; }
         public double Y { get; }
         public bool IsRightDirection { get; }
@@ -12,7 +11,6 @@ namespace Task3_2.Models
 
         public Stop(TransportModel model, double x, double y, bool isRightDirection)
         {
-            _model = model;
             X = x;
             Y = y;
             IsRightDirection = isRightDirection;

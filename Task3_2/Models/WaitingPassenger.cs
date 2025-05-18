@@ -16,15 +16,13 @@ namespace Task3_2.Models
         public WaitingPassenger(TransportModel model)
         {
             _model = model;
-            _speed = _random.Next(1, 3);
+            _speed = 1.5 + _random.NextDouble() * 2;
             bool movingRight = _random.Next(0, 2) == 0;
-            X = movingRight ? -20 : 920; // Появление с левого или правого края
-            // Случайный Y в пределах тротуара
+            X = movingRight ? -20 : 920;
             bool isTopSidewalk = _random.Next(0, 2) == 0;
             Y = isTopSidewalk
-                ? _model.SidewalkTopY + _random.NextDouble() * 40
-                : _model.SidewalkBottomY + _random.NextDouble() * 40;
-            // Выбираем остановку на той же стороне
+                ? _model.SidewalkTopY + 10 + _random.NextDouble() * 20
+                : _model.SidewalkBottomY + 10 + _random.NextDouble() * 20;
             _targetStop = Y < _model.SidewalkBottomY
                 ? _model.Stops.First(s => s.Y == _model.SidewalkTopY)
                 : _model.Stops.First(s => s.Y == _model.SidewalkBottomY);
@@ -40,14 +38,16 @@ namespace Task3_2.Models
             if (Math.Abs(X - _targetStop.X) < 10)
             {
                 _isWaiting = true;
-                // Смещение, чтобы избежать перекрытия
-                X = _targetStop.X + _random.Next(-20, 20);
-                Y = _targetStop.Y;
+                X = _targetStop.X + _random.Next(-20, 21);
+                if (Y < _targetStop.Y)
+                    Y = _targetStop.Y + _random.NextDouble() * 40;
+                else if (Y > _targetStop.Y + 40)
+                    Y = _targetStop.Y + _random.NextDouble() * 40;
                 _targetStop.AddPassenger(this);
                 return;
             }
 
-            // Движение к остановке
+            // Move toward the stop
             X += X < _targetStop.X ? _speed : -_speed;
         }
     }

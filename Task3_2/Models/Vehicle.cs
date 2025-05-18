@@ -14,16 +14,15 @@ namespace Task3_2.Models
         protected readonly double _maxSpeed;
         protected bool _movingRight;
         protected int _lane;
-        protected readonly double _stopDistance = 150;
 
         protected Vehicle(TransportModel model)
         {
             _model = model;
             _maxSpeed = _random.Next(3, 5);
-            _lane = _random.Next(0, 2); // Случайная полоса для автобусов и машин
-            _movingRight = _lane == 1; // lane 0: справа налево, lane 1: слева направо
+            _lane = _random.Next(0, 2);
+            _movingRight = _lane == 1;
             X = _movingRight ? -50 : 950;
-            Y = _model.RoadY + (_lane == 0 ? 20 : 60); // lane 0: Y=220, lane 1: Y=260
+            Y = _model.RoadY + (_lane == 0 ? 15 : 65);
             _speed = _maxSpeed;
         }
 
@@ -35,7 +34,7 @@ namespace Task3_2.Models
             if (vehicleAhead != null)
             {
                 double distance = _movingRight ? vehicleAhead.X - X - 40 : X - vehicleAhead.X - 40;
-                if (distance < 20)
+                if (distance < 50)
                 {
                     _speed = 0;
                 }

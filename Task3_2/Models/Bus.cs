@@ -14,6 +14,7 @@ namespace Task3_2.Models
 
         public event EventHandler BusStopped;
         public event EventHandler BusOvercrowded;
+        public event EventHandler BusDeparted;
 
         public bool IsOvercrowded => _isOvercrowded;
 
@@ -35,15 +36,14 @@ namespace Task3_2.Models
             Stop stop = FindNearestStop();
             if (stop != null && Math.Abs(X - stop.X) < 20 && !_isOvercrowded)
             {
-                // Проверяем, нет ли другого автобуса на остановке
                 bool isStopOccupied = _model.Vehicles.OfType<Bus>()
                     .Any(v => v != this && Math.Abs(v.X - stop.X) < 20 && v._speed == 0);
-                // Останавливаемся с вероятностью 90%, если остановка свободна
                 if (!isStopOccupied && _random.NextDouble() < _stopProbability)
                 {
                     _speed = 0;
                     BusStopped?.Invoke(this, EventArgs.Empty);
                     await PerformBoardingAsync(stop);
+                    BusDeparted?.Invoke(this, EventArgs.Empty);
                 }
             }
 
@@ -74,17 +74,15 @@ namespace Task3_2.Models
                     break;
                 }
 
-                // 70% вероятность, что пассажир сядет
                 if (_random.NextDouble() < 0.7)
                 {
                     _currentPassengers++;
                     stop.RemovePassenger(passenger);
                     _model.RemovePassenger(passenger);
-                    await Task.Delay(500); // Время посадки
+                    await Task.Delay(500);
                 }
             }
 
-            // Задержка перед отъездом (2 секунды)
             await Task.Delay(2000);
         }
     }

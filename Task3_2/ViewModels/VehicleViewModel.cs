@@ -45,10 +45,16 @@ namespace Task3_2.ViewModels
         private readonly Bus _bus;
 
         private bool _isOvercrowded;
+        private bool _isStopped;
         public bool IsOvercrowded
         {
             get => _isOvercrowded;
             set => SetProperty(ref _isOvercrowded, value);
+        }
+        public bool IsStopped
+        {
+            get => _isStopped;
+            set => SetProperty(ref _isStopped, value);
         }
 
         public BusViewModel(Bus model) : base(model)
@@ -56,6 +62,8 @@ namespace Task3_2.ViewModels
             _bus = model;
             _isOvercrowded = _bus.IsOvercrowded;
             _bus.BusOvercrowded += (s, e) => IsOvercrowded = true;
+            _bus.BusStopped += (s, e) => IsStopped = true;
+            _bus.BusDeparted += (s, e) => IsStopped = false;
         }
     }
 }

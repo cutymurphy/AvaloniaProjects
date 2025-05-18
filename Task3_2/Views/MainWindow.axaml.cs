@@ -15,8 +15,13 @@ namespace Task3_2.Views
     public partial class MainWindow : Window
     {
         private Canvas _mainCanvas;
-        private readonly Dictionary<VehicleViewModel, Rectangle> _vehicleShapes = new Dictionary<VehicleViewModel, Rectangle>();
-        private readonly Dictionary<PassengerViewModel, Ellipse> _passengerShapes = new Dictionary<PassengerViewModel, Ellipse>();
+
+        private readonly Dictionary<VehicleViewModel, Rectangle> _vehicleShapes =
+            new Dictionary<VehicleViewModel, Rectangle>();
+
+        private readonly Dictionary<PassengerViewModel, Ellipse> _passengerShapes =
+            new Dictionary<PassengerViewModel, Ellipse>();
+
         private readonly DispatcherTimer _timer;
 
         public MainWindow()
@@ -143,7 +148,9 @@ namespace Task3_2.Views
             {
                 Width = vehicle is BusViewModel ? 60 : 40,
                 Height = 20,
-                Fill = vehicle is BusViewModel busVm ? (busVm.IsOvercrowded ? Brushes.Red : Brushes.Yellow) : Brushes.Teal,
+                Fill = vehicle is BusViewModel busVm
+                    ? (busVm.IsOvercrowded ? Brushes.Red : Brushes.Yellow)
+                    : Brushes.Teal,
                 RadiusX = 8,
                 RadiusY = 8,
                 Stroke = Brushes.Black,
@@ -165,7 +172,8 @@ namespace Task3_2.Views
                 Canvas.SetTop(rectangle, vehicle.Y);
                 if (vehicle is BusViewModel busVm)
                 {
-                    rectangle.Fill = busVm.IsOvercrowded ? Brushes.Red : Brushes.HotPink;
+                    rectangle.Fill = busVm.IsOvercrowded ? Brushes.Red :
+                        busVm.IsStopped ? Brushes.DeepPink : Brushes.HotPink;
                 }
             }
         }
@@ -185,6 +193,7 @@ namespace Task3_2.Views
             {
                 _mainCanvas.Children.Remove(rectangle);
             }
+
             _vehicleShapes.Clear();
         }
 
@@ -194,9 +203,9 @@ namespace Task3_2.Views
             {
                 Width = 12,
                 Height = 12,
-                Fill = passenger.IsWaiting ? Brushes.Orange : Brushes.LimeGreen,
-                Stroke = Brushes.DarkGreen,
-                StrokeThickness = 2
+                Fill = passenger.IsWaiting ? Brushes.OrangeRed : Brushes.LimeGreen,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1
             };
 
             Canvas.SetLeft(ellipse, passenger.X);
@@ -212,7 +221,7 @@ namespace Task3_2.Views
             {
                 Canvas.SetLeft(ellipse, passenger.X);
                 Canvas.SetTop(ellipse, passenger.Y);
-                ellipse.Fill = passenger.IsWaiting ? Brushes.Orange : Brushes.LimeGreen;
+                ellipse.Fill = passenger.IsWaiting ? Brushes.OrangeRed : Brushes.LimeGreen;
             }
         }
 
@@ -231,6 +240,7 @@ namespace Task3_2.Views
             {
                 _mainCanvas.Children.Remove(ellipse);
             }
+
             _passengerShapes.Clear();
         }
 

@@ -5,13 +5,7 @@
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
   <Application.Resources>
-        <local:EmergencyConverter x:Key="EmergencyConverter"/>
-        <local:TrafficLightConverter x:Key="TrafficLightConverter"/>
-        <local:TrafficLightConverterVertical x:Key="TrafficLightConverterVertical"/>
         <local:OffsetConverter x:Key="OffsetConverter"/>
     </Application.Resources>
     <Application.Styles>

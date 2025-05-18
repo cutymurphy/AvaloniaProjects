@@ -16,12 +16,11 @@ namespace Task3_2.Models
             _model = model;
             _speed = _random.Next(1, 3);
             _movingRight = _random.Next(0, 2) == 0;
-            X = _movingRight ? -20 : 920; // Появление с левого или правого края
-            // Случайный Y в пределах тротуара
+            X = _movingRight ? -20 : 920;
             bool isTopSidewalk = _random.Next(0, 2) == 0;
             Y = isTopSidewalk
-                ? _model.SidewalkTopY + _random.NextDouble() * 40
-                : _model.SidewalkBottomY + _random.NextDouble() * 40;
+                ? _model.SidewalkTopY + 10 + _random.NextDouble() * 20
+                : _model.SidewalkBottomY + 10 + _random.NextDouble() * 20;
         }
 
         public void Update()
