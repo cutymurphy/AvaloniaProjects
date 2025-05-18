@@ -165,7 +165,7 @@ namespace Task3_2.Views
                 Canvas.SetTop(rectangle, vehicle.Y);
                 if (vehicle is BusViewModel busVm)
                 {
-                    rectangle.Fill = busVm.IsOvercrowded ? Brushes.Red : Brushes.Yellow;
+                    rectangle.Fill = busVm.IsOvercrowded ? Brushes.Red : Brushes.HotPink;
                 }
             }
         }

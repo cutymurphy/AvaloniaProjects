@@ -9,8 +9,8 @@ namespace Task3_2.Models
     {
         public double RoadY { get; } = 200;
         public double RoadHeight { get; } = 100;
-        public double SidewalkTopY { get; } = 120; // Верхний тротуар
-        public double SidewalkBottomY { get; } = 320; // Нижний тротуар
+        public double SidewalkTopY { get; } = 160; // Верхний тротуар
+        public double SidewalkBottomY { get; } = 300; // Нижний тротуар
 
         public ObservableCollection<Vehicle> Vehicles { get; }
         public ObservableCollection<IPassenger> Passengers { get; }

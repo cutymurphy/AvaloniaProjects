@@ -35,16 +35,12 @@
                     </Style>
                 </Rectangle.Styles>
             </Rectangle>
-
-            <!-- Остановки -->
-            <ItemsControl ItemsSource="{Binding Stops}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Rectangle Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}" 
-                                   Width="50" Height="20" Fill="Blue" Opacity="0.5"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            
+            <Rectangle Canvas.Left="425" Canvas.Top="160" 
+                       Width="50" Height="40" Fill="Blue" Opacity="0.5"/>
+            
+            <Rectangle Canvas.Left="425" Canvas.Top="300" 
+                       Width="50" Height="40" Fill="Blue" Opacity="0.5"/>
         </Canvas>
     </Grid>
 </Window>
