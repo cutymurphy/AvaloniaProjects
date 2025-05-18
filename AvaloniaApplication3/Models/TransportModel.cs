@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Timers;
 
-namespace Task3_2.Models
+namespace AvaloniaApplication3.Models
 {
     public class TransportModel : IDisposable
     {

@@ -3,9 +3,9 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Avalonia.Threading;
-using Task3_2.Models;
+using AvaloniaApplication3.Models;
 
-namespace Task3_2.ViewModels
+namespace AvaloniaApplication3.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {

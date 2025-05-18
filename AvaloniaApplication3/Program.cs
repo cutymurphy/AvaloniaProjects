@@ -1,6 +1,6 @@
 ﻿using Avalonia;
 
-namespace Task3_2
+namespace AvaloniaApplication3
 {
     class Program
     {

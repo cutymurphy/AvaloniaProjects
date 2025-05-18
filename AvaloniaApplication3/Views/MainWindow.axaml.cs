@@ -8,9 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using Task3_2.ViewModels;
+using AvaloniaApplication3.ViewModels;
 
-namespace Task3_2.Views
+namespace AvaloniaApplication3.Views
 {
     public partial class MainWindow : Window
     {

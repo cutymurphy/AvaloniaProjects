@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Task3_2.Models
+namespace AvaloniaApplication3.Models
 {
     public abstract class Vehicle
     {

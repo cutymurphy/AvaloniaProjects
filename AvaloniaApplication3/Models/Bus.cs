@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Task3_2.Models
+namespace AvaloniaApplication3.Models
 {
     public class Bus : Vehicle
     {

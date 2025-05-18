@@ -1,4 +1,4 @@
-namespace Task3_2.Models
+namespace AvaloniaApplication3.Models
 {
     public interface IPassenger
     {

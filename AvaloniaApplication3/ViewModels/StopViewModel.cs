@@ -1,6 +1,6 @@
-using Task3_2.Models;
+using AvaloniaApplication3.Models;
 
-namespace Task3_2.ViewModels
+namespace AvaloniaApplication3.ViewModels
 {
     public class StopViewModel : ViewModelBase
     {

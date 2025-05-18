@@ -2,7 +2,7 @@ using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
 
-namespace Task3_2
+namespace AvaloniaApplication3
 {
     public class OffsetConverter : IValueConverter
     {
