@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Task3_2.ViewModels"
+        x:Class="Task3_2.Views.MainWindow"
+        Title="Перекресток - Новый дизайн"
+        Width="900" Height="500"
+        x:DataType="vm:MainWindowViewModel"
+        Background="#E6F0FA">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Основное полотно -->
+        <Canvas x:Name="MainCanvas" Grid.Row="1" Background="#A9C9E8">
+            <!-- Горизонтальная дорога -->
+            <Rectangle Canvas.Left="0" Canvas.Top="{Binding RoadY}" 
+                       Width="900" Height="{Binding RoadHeight}" 
+                       Fill="#333333"/>
+
+            <!-- Разметка на горизонтальной дороге -->
+            <Rectangle Canvas.Left="0" Canvas.Top="{Binding RoadY, Converter={StaticResource OffsetConverter}, ConverterParameter=48}" 
+                       Width="900" Height="4" Fill="Yellow" Opacity="0.8">
+                <Rectangle.Styles>
+                    <Style Selector="Rectangle">
+                        <Setter Property="StrokeDashArray" Value="10,5"/>
+                        <Setter Property="Stroke" Value="Yellow"/>
+                        <Setter Property="StrokeThickness" Value="1"/>
+                    </Style>
+                </Rectangle.Styles>
+            </Rectangle>
+        </Canvas>
+    </Grid>
+</Window>
