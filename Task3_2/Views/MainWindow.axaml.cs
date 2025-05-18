@@ -1,250 +1,237 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Task3_2.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
+using Task3_2.ViewModels;
 
 namespace Task3_2.Views
 {
     public partial class MainWindow : Window
     {
-        private Canvas? _mainCanvas;
-        private readonly Dictionary<CarViewModel, Rectangle> _carShapes = new Dictionary<CarViewModel, Rectangle>();
-
-        private readonly Dictionary<PedestrianViewModel, Ellipse> _pedestrianShapes =
-            new Dictionary<PedestrianViewModel, Ellipse>();
-
+        private Canvas _mainCanvas;
+        private readonly Dictionary<VehicleViewModel, Rectangle> _vehicleShapes = new Dictionary<VehicleViewModel, Rectangle>();
+        private readonly Dictionary<PassengerViewModel, Ellipse> _passengerShapes = new Dictionary<PassengerViewModel, Ellipse>();
         private readonly DispatcherTimer _timer;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _mainCanvas = this.FindControl<Canvas>("MainCanvas");
-            if (_mainCanvas == null)
-            {
-                throw new Exception("MainCanvas не найден в MainWindow.axaml");
-            }
+            _mainCanvas = this.FindControl<Canvas>("MainCanvas") ?? throw new Exception("MainCanvas не найден");
+            DataContextChanged += MainWindow_DataContextChanged;
 
-            this.DataContextChanged += MainWindow_DataContextChanged;
-
-            _timer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(50)
-            };
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
             _timer.Tick += Timer_Tick;
             _timer.Start();
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            if (!(DataContext is MainWindowViewModel viewModel))
-                return;
-
-            UpdateCars(viewModel);
-            UpdatePedestrians(viewModel);
+            if (DataContext is MainWindowViewModel viewModel)
+            {
+                UpdateVehicles(viewModel);
+                UpdatePassengers(viewModel);
+            }
         }
 
         private void MainWindow_DataContextChanged(object? sender, EventArgs e)
         {
             if (DataContext is MainWindowViewModel viewModel)
             {
-                viewModel.Cars.CollectionChanged += Cars_CollectionChanged;
-                viewModel.Pedestrians.CollectionChanged += Pedestrians_CollectionChanged;
-
-                UpdateCars(viewModel);
-                UpdatePedestrians(viewModel);
+                viewModel.Vehicles.CollectionChanged += Vehicles_CollectionChanged;
+                viewModel.Passengers.CollectionChanged += Passengers_CollectionChanged;
+                UpdateVehicles(viewModel);
+                UpdatePassengers(viewModel);
             }
         }
 
-        private void Cars_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void Vehicles_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            if (!(DataContext is MainWindowViewModel viewModel))
-                return;
+            if (DataContext is not MainWindowViewModel viewModel) return;
 
             if (e.NewItems != null)
             {
-                foreach (CarViewModel car in e.NewItems)
+                foreach (VehicleViewModel vehicle in e.NewItems)
                 {
-                    AddCarVisual(car);
+                    AddVehicleVisual(vehicle);
                 }
             }
 
             if (e.OldItems != null)
             {
-                foreach (CarViewModel car in e.OldItems)
+                foreach (VehicleViewModel vehicle in e.OldItems)
                 {
-                    RemoveCarVisual(car);
+                    RemoveVehicleVisual(vehicle);
                 }
             }
 
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                ClearAllCars();
-                UpdateCars(viewModel);
+                ClearAllVehicles();
+                UpdateVehicles(viewModel);
             }
         }
 
-        private void Pedestrians_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void Passengers_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            if (!(DataContext is MainWindowViewModel viewModel))
-                return;
+            if (DataContext is not MainWindowViewModel viewModel) return;
 
             if (e.NewItems != null)
             {
-                foreach (PedestrianViewModel pedestrian in e.NewItems)
+                foreach (PassengerViewModel passenger in e.NewItems)
                 {
-                    AddPedestrianVisual(pedestrian);
+                    AddPassengerVisual(passenger);
                 }
             }
 
             if (e.OldItems != null)
             {
-                foreach (PedestrianViewModel pedestrian in e.OldItems)
+                foreach (PassengerViewModel passenger in e.OldItems)
                 {
-                    RemovePedestrianVisual(pedestrian);
+                    RemovePassengerVisual(passenger);
                 }
             }
 
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
-                ClearAllPedestrians();
-                UpdatePedestrians(viewModel);
+                ClearAllPassengers();
+                UpdatePassengers(viewModel);
             }
         }
 
-        private void UpdateCars(MainWindowViewModel viewModel)
+        private void UpdateVehicles(MainWindowViewModel viewModel)
         {
-            var carsToUpdate = viewModel.Cars.ToList();
-            foreach (var car in carsToUpdate)
+            foreach (var vehicle in viewModel.Vehicles.ToList())
             {
-                car.UpdatePosition();
-                if (!_carShapes.ContainsKey(car))
+                vehicle.UpdatePosition();
+                if (!_vehicleShapes.ContainsKey(vehicle))
                 {
-                    AddCarVisual(car);
+                    AddVehicleVisual(vehicle);
                 }
                 else
                 {
-                    UpdateCarPosition(car);
+                    UpdateVehiclePosition(vehicle);
                 }
             }
         }
 
-        private void UpdatePedestrians(MainWindowViewModel viewModel)
+        private void UpdatePassengers(MainWindowViewModel viewModel)
         {
-            var pedestriansToUpdate = viewModel.Pedestrians.ToList();
-            foreach (var pedestrian in pedestriansToUpdate)
+            foreach (var passenger in viewModel.Passengers.ToList())
             {
-                pedestrian.UpdatePosition();
-                if (!_pedestrianShapes.ContainsKey(pedestrian))
+                passenger.UpdatePosition();
+                if (!_passengerShapes.ContainsKey(passenger))
                 {
-                    AddPedestrianVisual(pedestrian);
+                    AddPassengerVisual(passenger);
                 }
                 else
                 {
-                    UpdatePedestrianPosition(pedestrian);
+                    UpdatePassengerPosition(passenger);
                 }
             }
         }
 
-        private void AddCarVisual(CarViewModel car)
+        private void AddVehicleVisual(VehicleViewModel vehicle)
         {
             var rectangle = new Rectangle
             {
-                Width = 40,
+                Width = vehicle is BusViewModel ? 60 : 40,
                 Height = 20,
-                Fill = Brushes.Teal,
+                Fill = vehicle is BusViewModel busVm ? (busVm.IsOvercrowded ? Brushes.Red : Brushes.Yellow) : Brushes.Teal,
                 RadiusX = 8,
                 RadiusY = 8,
                 Stroke = Brushes.Black,
                 StrokeThickness = 1
             };
 
-            Canvas.SetLeft(rectangle, car.X);
-            Canvas.SetTop(rectangle, car.Y);
+            Canvas.SetLeft(rectangle, vehicle.X);
+            Canvas.SetTop(rectangle, vehicle.Y);
 
-            _mainCanvas?.Children.Add(rectangle);
-            _carShapes[car] = rectangle;
+            _mainCanvas.Children.Add(rectangle);
+            _vehicleShapes[vehicle] = rectangle;
         }
 
-        private void UpdateCarPosition(CarViewModel car)
+        private void UpdateVehiclePosition(VehicleViewModel vehicle)
         {
-            if (_carShapes.TryGetValue(car, out Rectangle? rectangle) && rectangle != null)
+            if (_vehicleShapes.TryGetValue(vehicle, out var rectangle))
             {
-                Canvas.SetLeft(rectangle, car.X);
-                Canvas.SetTop(rectangle, car.Y);
+                Canvas.SetLeft(rectangle, vehicle.X);
+                Canvas.SetTop(rectangle, vehicle.Y);
+                if (vehicle is BusViewModel busVm)
+                {
+                    rectangle.Fill = busVm.IsOvercrowded ? Brushes.Red : Brushes.Yellow;
+                }
             }
         }
 
-        private void RemoveCarVisual(CarViewModel car)
+        private void RemoveVehicleVisual(VehicleViewModel vehicle)
         {
-            if (_carShapes.TryGetValue(car, out Rectangle? rectangle) && rectangle != null)
+            if (_vehicleShapes.TryGetValue(vehicle, out var rectangle))
             {
-                _mainCanvas?.Children.Remove(rectangle);
-                _carShapes.Remove(car);
+                _mainCanvas.Children.Remove(rectangle);
+                _vehicleShapes.Remove(vehicle);
             }
         }
 
-        private void ClearAllCars()
+        private void ClearAllVehicles()
         {
-            foreach (var rectangle in _carShapes.Values)
+            foreach (var rectangle in _vehicleShapes.Values)
             {
-                _mainCanvas?.Children.Remove(rectangle);
+                _mainCanvas.Children.Remove(rectangle);
             }
-
-            _carShapes.Clear();
+            _vehicleShapes.Clear();
         }
 
-        private void AddPedestrianVisual(PedestrianViewModel pedestrian)
+        private void AddPassengerVisual(PassengerViewModel passenger)
         {
             var ellipse = new Ellipse
             {
                 Width = 12,
                 Height = 12,
-                Fill = Brushes.LimeGreen,
+                Fill = passenger.IsWaiting ? Brushes.Orange : Brushes.LimeGreen,
                 Stroke = Brushes.DarkGreen,
                 StrokeThickness = 2
             };
 
-            Canvas.SetLeft(ellipse, pedestrian.X);
-            Canvas.SetTop(ellipse, pedestrian.Y);
+            Canvas.SetLeft(ellipse, passenger.X);
+            Canvas.SetTop(ellipse, passenger.Y);
 
-            _mainCanvas?.Children.Add(ellipse);
-            _pedestrianShapes[pedestrian] = ellipse;
+            _mainCanvas.Children.Add(ellipse);
+            _passengerShapes[passenger] = ellipse;
         }
 
-        private void UpdatePedestrianPosition(PedestrianViewModel pedestrian)
+        private void UpdatePassengerPosition(PassengerViewModel passenger)
         {
-            if (_pedestrianShapes.TryGetValue(pedestrian, out Ellipse? ellipse) && ellipse != null)
+            if (_passengerShapes.TryGetValue(passenger, out var ellipse))
             {
-                Canvas.SetLeft(ellipse, pedestrian.X);
-                Canvas.SetTop(ellipse, pedestrian.Y);
+                Canvas.SetLeft(ellipse, passenger.X);
+                Canvas.SetTop(ellipse, passenger.Y);
+                ellipse.Fill = passenger.IsWaiting ? Brushes.Orange : Brushes.LimeGreen;
             }
         }
 
-        private void RemovePedestrianVisual(PedestrianViewModel pedestrian)
+        private void RemovePassengerVisual(PassengerViewModel passenger)
         {
-            if (_pedestrianShapes.TryGetValue(pedestrian, out Ellipse? ellipse) && ellipse != null)
+            if (_passengerShapes.TryGetValue(passenger, out var ellipse))
             {
-                _mainCanvas?.Children.Remove(ellipse);
-                _pedestrianShapes.Remove(pedestrian);
+                _mainCanvas.Children.Remove(ellipse);
+                _passengerShapes.Remove(passenger);
             }
         }
 
-        private void ClearAllPedestrians()
+        private void ClearAllPassengers()
         {
-            foreach (var ellipse in _pedestrianShapes.Values)
+            foreach (var ellipse in _passengerShapes.Values)
             {
-                _mainCanvas?.Children.Remove(ellipse);
+                _mainCanvas.Children.Remove(ellipse);
             }
-
-            _pedestrianShapes.Clear();
+            _passengerShapes.Clear();
         }
 
         private void InitializeComponent()

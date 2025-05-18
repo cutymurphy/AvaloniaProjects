@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Task3_2.ViewModels"
         x:Class="Task3_2.Views.MainWindow"
-        Title="Перекресток - Новый дизайн"
+        Title="Остановка транспорта"
         Width="900" Height="500"
         x:DataType="vm:MainWindowViewModel"
         Background="#E6F0FA">
@@ -13,14 +13,18 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Основное полотно -->
         <Canvas x:Name="MainCanvas" Grid.Row="1" Background="#A9C9E8">
-            <!-- Горизонтальная дорога -->
-            <Rectangle Canvas.Left="0" Canvas.Top="{Binding RoadY}" 
-                       Width="900" Height="{Binding RoadHeight}" 
-                       Fill="#333333"/>
+            <!-- Тротуары -->
+            <Rectangle Canvas.Left="0" Canvas.Top="{Binding SidewalkTopY}" 
+                       Width="900" Height="40" Fill="#666666"/>
+            <Rectangle Canvas.Left="0" Canvas.Top="{Binding SidewalkBottomY}" 
+                       Width="900" Height="40" Fill="#666666"/>
 
-            <!-- Разметка на горизонтальной дороге -->
+            <!-- Дорога -->
+            <Rectangle Canvas.Left="0" Canvas.Top="{Binding RoadY}" 
+                       Width="900" Height="{Binding RoadHeight}" Fill="#333333"/>
+
+            <!-- Разметка -->
             <Rectangle Canvas.Left="0" Canvas.Top="{Binding RoadY, Converter={StaticResource OffsetConverter}, ConverterParameter=48}" 
                        Width="900" Height="4" Fill="Yellow" Opacity="0.8">
                 <Rectangle.Styles>
@@ -31,6 +35,16 @@
                     </Style>
                 </Rectangle.Styles>
             </Rectangle>
+
+            <!-- Остановки -->
+            <ItemsControl ItemsSource="{Binding Stops}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Rectangle Canvas.Left="{Binding X}" Canvas.Top="{Binding Y}" 
+                                   Width="50" Height="20" Fill="Blue" Opacity="0.5"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Canvas>
     </Grid>
 </Window>

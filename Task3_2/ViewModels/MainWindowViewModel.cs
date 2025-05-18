@@ -9,148 +9,96 @@ namespace Task3_2.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private readonly CrossingModel _crossingModel;
-        
-        public ObservableCollection<CarViewModel> Cars { get; }
-        public ObservableCollection<PedestrianViewModel> Pedestrians { get; }
-        public double RoadY => _crossingModel?.RoadY ?? 200;
-        public double RoadHeight => _crossingModel?.RoadHeight ?? 100;
+        private readonly TransportModel _model;
+
+        public ObservableCollection<VehicleViewModel> Vehicles { get; }
+        public ObservableCollection<PassengerViewModel> Passengers { get; }
+        public ObservableCollection<StopViewModel> Stops { get; }
+        public double RoadY => _model.RoadY;
+        public double RoadHeight => _model.RoadHeight;
+        public double SidewalkTopY => _model.SidewalkTopY;
+        public double SidewalkBottomY => _model.SidewalkBottomY;
 
         public MainWindowViewModel()
         {
-            Cars = new ObservableCollection<CarViewModel>();
-            Pedestrians = new ObservableCollection<PedestrianViewModel>();
-            
-            _crossingModel = new CrossingModel();
-            
-            _crossingModel.Cars.CollectionChanged += CarsCollectionChanged;
-            _crossingModel.Pedestrians.CollectionChanged += PedestriansCollectionChanged;
+            _model = new TransportModel();
+            Vehicles = new ObservableCollection<VehicleViewModel>();
+            Passengers = new ObservableCollection<PassengerViewModel>();
+            Stops = new ObservableCollection<StopViewModel>();
+
+            foreach (var stop in _model.Stops)
+            {
+                Stops.Add(new StopViewModel(stop));
+            }
+
+            _model.Vehicles.CollectionChanged += VehiclesCollectionChanged;
+            _model.Passengers.CollectionChanged += PassengersCollectionChanged;
         }
 
-        private void CarsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void VehiclesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             Dispatcher.UIThread.Post(() =>
             {
                 if (e.NewItems != null)
                 {
-                    foreach (Car car in e.NewItems)
+                    foreach (Vehicle vehicle in e.NewItems)
                     {
-                        var carViewModel = new CarViewModel(car);
-                        Cars.Add(carViewModel);
+                        VehicleViewModel vm = vehicle is Bus
+                            ? new BusViewModel((Bus)vehicle)
+                            : new CarViewModel((Car)vehicle);
+                        Vehicles.Add(vm);
                     }
                 }
-                
+
                 if (e.OldItems != null)
                 {
-                    foreach (Car car in e.OldItems)
+                    foreach (Vehicle vehicle in e.OldItems)
                     {
-                        var vmToRemove = Cars.FirstOrDefault(vm => vm.Model == car);
+                        var vmToRemove = Vehicles.FirstOrDefault(vm => vm.Model == vehicle);
                         if (vmToRemove != null)
                         {
-                            Cars.Remove(vmToRemove);
+                            Vehicles.Remove(vmToRemove);
                         }
                     }
                 }
-                
+
                 if (e.Action == NotifyCollectionChangedAction.Reset)
                 {
-                    Cars.Clear();
+                    Vehicles.Clear();
                 }
             });
         }
-        
-        private void PedestriansCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+
+        private void PassengersCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             Dispatcher.UIThread.Post(() =>
             {
                 if (e.NewItems != null)
                 {
-                    foreach (Pedestrian pedestrian in e.NewItems)
+                    foreach (IPassenger passenger in e.NewItems)
                     {
-                        var pedestrianViewModel = new PedestrianViewModel(pedestrian);
-                        Pedestrians.Add(pedestrianViewModel);
+                        var vm = new PassengerViewModel(passenger);
+                        Passengers.Add(vm);
                     }
                 }
-                
+
                 if (e.OldItems != null)
                 {
-                    foreach (Pedestrian pedestrian in e.OldItems)
+                    foreach (IPassenger passenger in e.OldItems)
                     {
-                        var vmToRemove = Pedestrians.FirstOrDefault(vm => vm.Model == pedestrian);
+                        var vmToRemove = Passengers.FirstOrDefault(vm => vm.Model == passenger);
                         if (vmToRemove != null)
                         {
-                            Pedestrians.Remove(vmToRemove);
+                            Passengers.Remove(vmToRemove);
                         }
                     }
                 }
-                
+
                 if (e.Action == NotifyCollectionChangedAction.Reset)
                 {
-                    Pedestrians.Clear();
+                    Passengers.Clear();
                 }
             });
-        }
-    }
-
-    public class CarViewModel : ViewModelBase
-    {
-        public Car Model { get; }
-        
-        private double _x;
-        public double X
-        {
-            get => _x;
-            set => SetProperty(ref _x, value);
-        }
-        
-        private double _y;
-        public double Y
-        {
-            get => _y;
-            set => SetProperty(ref _y, value);
-        }
-        
-        public CarViewModel(Car model)
-        {
-            Model = model;
-            UpdatePosition();
-        }
-        
-        public void UpdatePosition()
-        {
-            X = Model.X;
-            Y = Model.Y;
-        }
-    }
-    
-    public class PedestrianViewModel : ViewModelBase
-    {
-        public Pedestrian Model { get; }
-        
-        private double _x;
-        public double X
-        {
-            get => _x;
-            set => SetProperty(ref _x, value);
-        }
-        
-        private double _y;
-        public double Y
-        {
-            get => _y;
-            set => SetProperty(ref _y, value);
-        }
-        
-        public PedestrianViewModel(Pedestrian model)
-        {
-            Model = model;
-            UpdatePosition();
-        }
-        
-        public void UpdatePosition()
-        {
-            X = Model.X;
-            Y = Model.Y;
         }
     }
 }
