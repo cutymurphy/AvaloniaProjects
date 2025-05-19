@@ -7,12 +7,14 @@ using AvaloniaApplication4.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FileSystemLibrary.Models;
+using FileSystemLibrary.Services;
 
 namespace AvaloniaApplication4.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase
     {
         private readonly ReflectionService _reflectionService = new ReflectionService();
+        private readonly FileSystemManager _fileSystemManager = new FileSystemManager();
 
         [ObservableProperty]
         private string _dllPath = string.Empty;
@@ -35,7 +37,16 @@ namespace AvaloniaApplication4.ViewModels
         [ObservableProperty]
         private string _executionResult = string.Empty;
 
+        [ObservableProperty]
+        private ObservableCollection<FileSystemItem> _fileSystemItems;
+
         private object? _currentInstance;
+
+        public MainWindowViewModel()
+        {
+            _fileSystemManager.Initialize();
+            FileSystemItems = _fileSystemManager.FileSystemItems;
+        }
 
         partial void OnSelectedClassChanged(Type? value)
         {
@@ -99,8 +110,26 @@ namespace AvaloniaApplication4.ViewModels
 
             try
             {
+                // Используем корневую папку из FileSystemItems как экземпляр, если это Folder
+                if (_currentInstance == null && FileSystemItems.Any() && SelectedClass == typeof(Folder))
+                {
+                    _currentInstance = FileSystemItems.FirstOrDefault(i => i is Folder);
+                }
+
                 var result = _reflectionService.InvokeMethod(SelectedClass, SelectedMethod, _currentInstance, Parameters.ToList());
-                _currentInstance = result as IFileSystemItem; // Сохраняем экземпляр, если метод возвращает IFileSystemItem
+                _currentInstance = result as IFileSystemItem ?? _currentInstance;
+
+                // Обновляем FileSystemItems, если метод изменил структуру
+                if (_currentInstance is Folder folder)
+                {
+                    var root = FileSystemItems.FirstOrDefault(i => i is Folder);
+                    if (root != folder)
+                    {
+                        FileSystemItems.Clear();
+                        FileSystemItems.Add(folder);
+                    }
+                }
+
                 ExecutionResult = result != null ? $"Результат: {result}" : "Метод выполнен.";
             }
             catch (Exception ex)

@@ -27,7 +27,7 @@ namespace AvaloniaApplication4.Services
         public List<MethodInfo> GetMethods(Type type)
         {
             return type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Where(m => m.DeclaringType == type) // Только методы, объявленные в самом классе
+                .Where(m => m.DeclaringType == type)
                 .ToList();
         }
 
@@ -49,7 +49,7 @@ namespace AvaloniaApplication4.Services
                 }
                 else
                 {
-                    instance ??= Activator.CreateInstance(type);
+                    instance ??= Activator.CreateInstance(type, new object[] { "Temp" }); // Создаем экземпляр с временным именем
                     return method.Invoke(instance, paramValues);
                 }
             }
@@ -65,10 +65,29 @@ namespace AvaloniaApplication4.Services
             if (type == typeof(string)) return value;
             if (type == typeof(int)) return int.Parse(value);
             if (type == typeof(long)) return long.Parse(value);
-            if (type == typeof(IFileSystemItem) || type == typeof(Folder))
+            if (type == typeof(Folder) || type == typeof(IFileSystemItem) || type == typeof(FileSystemItem))
             {
-                // Для простоты создаем новую папку с именем из значения
-                return new Folder(value);
+                // Ожидаем формат: "Folder:name" или "File:name:size"
+                var parts = value.Split(':');
+                if (parts.Length < 2) throw new ArgumentException("Неверный формат ввода. Ожидается 'Folder:name' или 'File:name:size'.");
+
+                string itemType = parts[0].ToLower();
+                string name = parts[1];
+
+                if (itemType == "folder")
+                {
+                    return new Folder(name);
+                }
+                else if (itemType == "file")
+                {
+                    if (parts.Length < 3 || !long.TryParse(parts[2], out long size))
+                        throw new ArgumentException("Для файла требуется размер в формате 'File:name:size'.");
+                    return new File(name, size);
+                }
+                else
+                {
+                    throw new ArgumentException("Неизвестный тип: укажите 'Folder' или 'File'.");
+                }
             }
             throw new NotSupportedException($"Тип параметра {type.Name} не поддерживается.");
         }
