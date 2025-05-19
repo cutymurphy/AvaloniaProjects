@@ -40,8 +40,6 @@ namespace AvaloniaApplication4.ViewModels
         [ObservableProperty]
         private ObservableCollection<FileSystemItem> _fileSystemItems;
 
-        private object? _currentInstance;
-
         public MainWindowViewModel()
         {
             _fileSystemManager.Initialize();
@@ -53,7 +51,6 @@ namespace AvaloniaApplication4.ViewModels
             Methods.Clear();
             Parameters.Clear();
             ExecutionResult = string.Empty;
-            _currentInstance = null;
 
             if (value != null)
             {
@@ -110,23 +107,84 @@ namespace AvaloniaApplication4.ViewModels
 
             try
             {
-                // Используем корневую папку из FileSystemItems как экземпляр, если это Folder
-                if (_currentInstance == null && FileSystemItems.Any() && SelectedClass == typeof(Folder))
+                // Находим целевую папку и имя элемента
+                Folder? targetFolder = null;
+                string itemName = string.Empty;
+                var param = Parameters.FirstOrDefault();
+
+                if (param != null)
                 {
-                    _currentInstance = FileSystemItems.FirstOrDefault(i => i is Folder);
+                    if (param.Value.Contains('/'))
+                    {
+                        var parts = param.Value.Split('/');
+                        itemName = parts[^1];
+                        string path = string.Join("/", parts.Take(parts.Length - 1));
+                        targetFolder = _reflectionService.FindFolderByPath(FileSystemItems, path);
+                        if (targetFolder == null)
+                        {
+                            ExecutionResult = $"Папка по пути '{path}' не найдена.";
+                            return;
+                        }
+                        // Обновляем параметр, чтобы передать только имя элемента
+                        param.Value = itemName;
+                    }
+                    else
+                    {
+                        itemName = param.Value;
+                        targetFolder = FileSystemItems.FirstOrDefault(i => i is Folder) as Folder;
+                        if (targetFolder == null)
+                        {
+                            ExecutionResult = "Корневая папка не найдена.";
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    targetFolder = FileSystemItems.FirstOrDefault(i => i is Folder) as Folder;
+                    if (targetFolder == null)
+                    {
+                        ExecutionResult = "Корневая папка не найдена.";
+                        return;
+                    }
                 }
 
-                var result = _reflectionService.InvokeMethod(SelectedClass, SelectedMethod, _currentInstance, Parameters.ToList());
-                _currentInstance = result as IFileSystemItem ?? _currentInstance;
-
-                // Обновляем FileSystemItems, если метод изменил структуру
-                if (_currentInstance is Folder folder)
+                // Для File.Create добавляем размер из второго параметра
+                if (SelectedClass == typeof(File) && SelectedMethod.Name == "Create")
                 {
-                    var root = FileSystemItems.FirstOrDefault(i => i is Folder);
-                    if (root != folder)
+                    var sizeParam = Parameters.FirstOrDefault(p => p.Type == typeof(long));
+                    if (sizeParam == null || string.IsNullOrEmpty(sizeParam.Value) || !long.TryParse(sizeParam.Value, out _))
                     {
-                        FileSystemItems.Clear();
-                        FileSystemItems.Add(folder);
+                        ExecutionResult = "Укажите корректный размер файла.";
+                        return;
+                    }
+                }
+
+                // Вызываем метод
+                object? result;
+                if (SelectedClass == typeof(Folder) && SelectedMethod.Name == "Add")
+                {
+                    // Вызываем Add на целевой папке
+                    var addMethod = SelectedClass.GetMethod("Add");
+                    if (addMethod == null)
+                    {
+                        ExecutionResult = "Метод Add не найден.";
+                        return;
+                    }
+                    var newFolder = new Folder(itemName);
+                    addMethod.Invoke(targetFolder, new[] { newFolder as object });
+                    result = newFolder;
+                }
+                else
+                {
+                    // Для других методов (например, File.Create)
+                    result = _reflectionService.InvokeMethod(SelectedClass, SelectedMethod, null, Parameters.ToList(), FileSystemItems);
+                    if (SelectedClass == typeof(File) && SelectedMethod.Name == "Create")
+                    {
+                        if (result is File file)
+                        {
+                            targetFolder.Add(file);
+                        }
                     }
                 }
 

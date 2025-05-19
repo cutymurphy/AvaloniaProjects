@@ -7,6 +7,7 @@ namespace AvaloniaApplication4.Models
         public string Name { get; set; }
         public Type Type { get; set; }
         public string Value { get; set; } = string.Empty;
+        public string Size { get; set; } = string.Empty; // Для размера файла
 
         public MethodParameter(string name, Type type)
         {

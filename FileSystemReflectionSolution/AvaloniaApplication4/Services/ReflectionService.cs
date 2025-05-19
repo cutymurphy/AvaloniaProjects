@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Linq;
 using AvaloniaApplication4.Models;
 using FileSystemLibrary.Models;
-using System.Linq;
 
 namespace AvaloniaApplication4.Services
 {
@@ -27,7 +28,7 @@ namespace AvaloniaApplication4.Services
         public List<MethodInfo> GetMethods(Type type)
         {
             return type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Where(m => m.DeclaringType == type)
+                .Where(m => m.DeclaringType == type && !m.Name.StartsWith("get_") && !m.Name.StartsWith("set_"))
                 .ToList();
         }
 
@@ -38,18 +39,18 @@ namespace AvaloniaApplication4.Services
                 .ToList();
         }
 
-        public object? InvokeMethod(Type type, MethodInfo method, object? instance, List<MethodParameter> parameters)
+        public object? InvokeMethod(Type type, MethodInfo method, object? instance, List<MethodParameter> parameters, ObservableCollection<FileSystemItem> fileSystemItems)
         {
             try
             {
-                var paramValues = parameters.Select(p => ConvertParameter(p.Value, p.Type)).ToArray();
+                var paramValues = parameters.Select(p => ConvertParameter(p, type, method, fileSystemItems)).ToArray();
                 if (method.IsStatic)
                 {
                     return method.Invoke(null, paramValues);
                 }
                 else
                 {
-                    instance ??= Activator.CreateInstance(type, new object[] { "Temp" }); // Создаем экземпляр с временным именем
+                    instance ??= fileSystemItems.FirstOrDefault(i => i is Folder) ?? Activator.CreateInstance(type, new object[] { "Temp" });
                     return method.Invoke(instance, paramValues);
                 }
             }
@@ -59,37 +60,39 @@ namespace AvaloniaApplication4.Services
             }
         }
 
-        private object? ConvertParameter(string value, Type type)
+        private object? ConvertParameter(MethodParameter param, Type classType, MethodInfo method, ObservableCollection<FileSystemItem> fileSystemItems)
         {
+            string value = param.Value;
+            Type type = param.Type;
+
             if (string.IsNullOrEmpty(value) && !type.IsValueType) return null;
             if (type == typeof(string)) return value;
             if (type == typeof(int)) return int.Parse(value);
             if (type == typeof(long)) return long.Parse(value);
-            if (type == typeof(Folder) || type == typeof(IFileSystemItem) || type == typeof(FileSystemItem))
+
+            if (type == typeof(FileSystemItem) || type == typeof(IFileSystemItem))
             {
-                // Ожидаем формат: "Folder:name" или "File:name:size"
-                var parts = value.Split(':');
-                if (parts.Length < 2) throw new ArgumentException("Неверный формат ввода. Ожидается 'Folder:name' или 'File:name:size'.");
-
-                string itemType = parts[0].ToLower();
-                string name = parts[1];
-
-                if (itemType == "folder")
+                if (classType == typeof(Folder) && method.Name == "Add")
                 {
-                    return new Folder(name);
-                }
-                else if (itemType == "file")
-                {
-                    if (parts.Length < 3 || !long.TryParse(parts[2], out long size))
-                        throw new ArgumentException("Для файла требуется размер в формате 'File:name:size'.");
-                    return new File(name, size);
-                }
-                else
-                {
-                    throw new ArgumentException("Неизвестный тип: укажите 'Folder' или 'File'.");
+                    return new Folder(value);
                 }
             }
+
             throw new NotSupportedException($"Тип параметра {type.Name} не поддерживается.");
+        }
+
+        public Folder? FindFolderByPath(ObservableCollection<FileSystemItem> fileSystemItems, string path)
+        {
+            var parts = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+            Folder? currentFolder = fileSystemItems.OfType<Folder>().FirstOrDefault();
+
+            foreach (var part in parts)
+            {
+                if (currentFolder == null) return null;
+                currentFolder = currentFolder.Items.OfType<Folder>().FirstOrDefault(f => f.Name == part);
+            }
+
+            return currentFolder;
         }
     }
 }

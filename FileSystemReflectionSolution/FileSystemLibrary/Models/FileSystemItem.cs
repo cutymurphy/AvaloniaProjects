@@ -1,44 +1,55 @@
+using System;
+
 namespace FileSystemLibrary.Models
 {
     public abstract class FileSystemItem : IFileSystemItem
     {
         public string Name { get; set; }
         public Folder? ParentFolder { get; set; }
-        public string Location => ParentFolder == null ? "/" : ParentFolder.Location + Name + "/";
+
+        public string Location
+        {
+            get
+            {
+                if (ParentFolder == null) return Name;
+                return $"{ParentFolder.Location}/{Name}";
+            }
+        }
+
         public abstract FileSystemItemType ItemType { get; }
         public abstract long Size { get; }
 
         protected FileSystemItem(string name)
         {
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        public static void Copy(FileSystemItem item, Folder destination)
+        public static void Copy(FileSystemItem source, Folder destination)
         {
-            if (item is File file)
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
+            if (destination.Items.Any(i => i.Name == source.Name))
+                throw new InvalidOperationException($"Элемент с именем '{source.Name}' уже существует в папке '{destination.Name}'.");
+
+            FileSystemItem copy;
+            if (source is File file)
             {
-                var copiedFile = new File(file.Name, file.Size);
-                destination.Add(copiedFile);
+                copy = new File(file.Name, file.Size);
             }
-            else if (item is Folder folder)
+            else if (source is Folder folder)
             {
-                var copiedFolder = new Folder(folder.Name);
-                foreach (var child in folder.Items)
+                copy = new Folder(folder.Name);
+                foreach (var item in folder.Items)
                 {
-                    Copy(child, copiedFolder);
+                    Copy(item, (Folder)copy);
                 }
-                destination.Add(copiedFolder);
             }
-        }
-
-        public static void Move(FileSystemItem item, Folder destination)
-        {
-            if (item.ParentFolder != null)
+            else
             {
-                item.ParentFolder.Remove(item);
+                throw new NotSupportedException("Неизвестный тип элемента.");
             }
-            destination.Add(item);
-            item.ParentFolder = destination;
+
+            destination.Add(copy);
         }
     }
 }

@@ -49,7 +49,9 @@
                             <TextBlock Text=" (" />
                             <TextBlock Text="{Binding Type.Name}" />
                             <TextBlock Text="): " />
-                            <TextBox Width="200" Text="{Binding Value}" />
+                            <TextBox Width="200" Text="{Binding Value}" Watermark="{Binding Type.Name, Converter={StaticResource WatermarkConverter}}" />
+                            <TextBox Width="100" Text="{Binding Size}" Watermark="Размер (для файлов)" 
+                                     IsVisible="{Binding Type, Converter={StaticResource IsFileSystemItemConverter}}" />
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -59,7 +61,7 @@
         </StackPanel>
         
         <!-- File System View -->
-        <TreeView ItemsSource="{Binding FileSystemItems}" Margin="0,0,10,20">
+        <TreeView ItemsSource="{Binding FileSystemItems}" Margin="0,20,10,0">
             <TreeView.DataTemplates>
                 <TreeDataTemplate DataType="{x:Type models:Folder}" ItemsSource="{Binding Items}">
                     <StackPanel Orientation="Horizontal">

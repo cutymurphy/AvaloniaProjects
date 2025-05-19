@@ -3,12 +3,17 @@
              x:Class="AvaloniaApplication4.App"
              xmlns:local="using:AvaloniaApplication4"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
-        <local:ViewLocator/>
+        <local:ViewLocator />
     </Application.DataTemplates>
-  
+
+    <Application.Resources>
+        <local:IsFileSystemItemConverter x:Key="IsFileSystemItemConverter" />
+        <local:WatermarkConverter x:Key="WatermarkConverter" />
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
