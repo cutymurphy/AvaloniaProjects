@@ -1,6 +1,4 @@
-using AvaloniaApplication4.Models;
-
-namespace AvaloniaApplication4.Services
+namespace FileSystemLibrary.Models
 {
     public class FolderSizeCalculator
     {
@@ -11,7 +9,6 @@ namespace AvaloniaApplication4.Services
             {
                 totalSize += item.Size;
             }
-
             return totalSize;
         }
     }

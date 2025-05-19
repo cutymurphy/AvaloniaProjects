@@ -1,9 +1,6 @@
-using System;
-using System.Collections.ObjectModel;
-
-namespace AvaloniaApplication4.Models
+namespace FileSystemLibrary.Models
 {
-    public abstract class FileSystemItem
+    public abstract class FileSystemItem : IFileSystemItem
     {
         public string Name { get; set; }
         public Folder? ParentFolder { get; set; }
@@ -30,7 +27,6 @@ namespace AvaloniaApplication4.Models
                 {
                     Copy(child, copiedFolder);
                 }
-
                 destination.Add(copiedFolder);
             }
         }
@@ -41,7 +37,6 @@ namespace AvaloniaApplication4.Models
             {
                 item.ParentFolder.Remove(item);
             }
-
             destination.Add(item);
             item.ParentFolder = destination;
         }

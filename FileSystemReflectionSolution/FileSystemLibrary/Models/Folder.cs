@@ -1,12 +1,11 @@
 using System.Collections.ObjectModel;
-using AvaloniaApplication4.Services;
 
-namespace AvaloniaApplication4.Models
+namespace FileSystemLibrary.Models
 {
     public class Folder : FileSystemItem
     {
-        public ObservableCollection<FileSystemItem> Items { get; } = new();
-        private readonly FolderSizeCalculator _sizeCalculator = new();
+        public ObservableCollection<FileSystemItem> Items { get; } = new ObservableCollection<FileSystemItem>();
+        private readonly FolderSizeCalculator _sizeCalculator = new FolderSizeCalculator();
 
         public Folder(string name) : base(name)
         {

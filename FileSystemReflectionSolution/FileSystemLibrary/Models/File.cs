@@ -1,4 +1,4 @@
-namespace AvaloniaApplication4.Models
+namespace FileSystemLibrary.Models
 {
     public class File : FileSystemItem
     {

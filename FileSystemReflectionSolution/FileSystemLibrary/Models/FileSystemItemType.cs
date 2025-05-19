@@ -1,4 +1,4 @@
-namespace AvaloniaApplication4.Models
+namespace FileSystemLibrary.Models
 {
     public enum FileSystemItemType
     {

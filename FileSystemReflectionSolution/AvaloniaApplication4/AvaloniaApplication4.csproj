@@ -6,7 +6,6 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <RootNamespace>AvaloniaApplication4</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +15,6 @@
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="11.2.1"/>
         <PackageReference Include="Avalonia.Desktop" Version="11.2.1"/>
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.1" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.1"/>
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.1"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -24,6 +22,11 @@
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.1.3" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\FileSystemLibrary\FileSystemLibrary.csproj" />
     </ItemGroup>
 </Project>
