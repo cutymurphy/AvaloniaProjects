@@ -23,9 +23,18 @@ namespace FileSystemLibrary.Models
             return new File(name, size);
         }
 
+        public void Delete(string name)
+        {
+            if (ParentFolder == null)
+                throw new InvalidOperationException("Файл не находится в папке.");
+            if (Name != name)
+                throw new InvalidOperationException($"Имя файла '{name}' не совпадает с текущим файлом '{Name}'.");
+            ParentFolder.Remove(this);
+        }
+
         private bool HasExtension(string name)
         {
-            return Path.HasExtension(name); // Проверяет наличие точки и символов после неё
+            return Path.HasExtension(name);
         }
     }
 }

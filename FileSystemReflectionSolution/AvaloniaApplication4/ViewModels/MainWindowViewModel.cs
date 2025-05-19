@@ -160,11 +160,10 @@ namespace AvaloniaApplication4.ViewModels
                     }
                 }
 
-                // Вызываем метод
-                object? result;
+                // Обработка методов
                 if (SelectedClass == typeof(Folder) && SelectedMethod.Name == "Add")
                 {
-                    // Вызываем Add на целевой папке
+                    // Создание папки
                     var addMethod = SelectedClass.GetMethod("Add");
                     if (addMethod == null)
                     {
@@ -173,22 +172,59 @@ namespace AvaloniaApplication4.ViewModels
                     }
                     var newFolder = new Folder(itemName);
                     addMethod.Invoke(targetFolder, new[] { newFolder as object });
-                    result = newFolder;
+                }
+                else if (SelectedClass == typeof(Folder) && SelectedMethod.Name == "Remove")
+                {
+                    // Удаление папки или файла
+                    var itemToRemove = targetFolder.Items.FirstOrDefault(i => i.Name == itemName);
+                    if (itemToRemove == null)
+                    {
+                        ExecutionResult = $"Элемент '{itemName}' не найден в папке '{targetFolder.Name}'.";
+                        return;
+                    }
+                    var removeMethod = SelectedClass.GetMethod("Remove");
+                    if (removeMethod == null)
+                    {
+                        ExecutionResult = "Метод Remove не найден.";
+                        return;
+                    }
+                    removeMethod.Invoke(targetFolder, new[] { itemToRemove as object });
+                }
+                else if (SelectedClass == typeof(File) && SelectedMethod.Name == "Create")
+                {
+                    // Создание файла
+                    var result = _reflectionService.InvokeMethod(SelectedClass, SelectedMethod, null, Parameters.ToList(), FileSystemItems);
+                    if (result is File file)
+                    {
+                        targetFolder.Add(file);
+                    }
+                }
+                else if (SelectedClass == typeof(File) && SelectedMethod.Name == "Delete")
+                {
+                    // Удаление файла
+                    var fileToDelete = targetFolder.Items.OfType<File>().FirstOrDefault(f => f.Name == itemName);
+                    if (fileToDelete == null)
+                    {
+                        ExecutionResult = $"Файл '{itemName}' не найден в папке '{targetFolder.Name}'.";
+                        return;
+                    }
+                    var deleteMethod = SelectedClass.GetMethod("Delete");
+                    if (deleteMethod == null)
+                    {
+                        ExecutionResult = "Метод Delete не найден.";
+                        return;
+                    }
+                    deleteMethod.Invoke(fileToDelete, new[] { itemName as object });
                 }
                 else
                 {
-                    // Для других методов (например, File.Create)
-                    result = _reflectionService.InvokeMethod(SelectedClass, SelectedMethod, null, Parameters.ToList(), FileSystemItems);
-                    if (SelectedClass == typeof(File) && SelectedMethod.Name == "Create")
-                    {
-                        if (result is File file)
-                        {
-                            targetFolder.Add(file);
-                        }
-                    }
+                    // Для других методов
+                    var result = _reflectionService.InvokeMethod(SelectedClass, SelectedMethod, null, Parameters.ToList(), FileSystemItems);
+                    ExecutionResult = result != null ? $"Результат: {result}" : "Метод выполнен.";
+                    return;
                 }
 
-                ExecutionResult = result != null ? $"Результат: {result}" : "Метод выполнен.";
+                ExecutionResult = "Метод выполнен.";
             }
             catch (Exception ex)
             {

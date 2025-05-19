@@ -39,7 +39,8 @@ namespace AvaloniaApplication4.Services
                 .ToList();
         }
 
-        public object? InvokeMethod(Type type, MethodInfo method, object? instance, List<MethodParameter> parameters, ObservableCollection<FileSystemItem> fileSystemItems)
+        public object? InvokeMethod(Type type, MethodInfo method, object? instance, List<MethodParameter> parameters,
+            ObservableCollection<FileSystemItem> fileSystemItems)
         {
             try
             {
@@ -50,7 +51,8 @@ namespace AvaloniaApplication4.Services
                 }
                 else
                 {
-                    instance ??= fileSystemItems.FirstOrDefault(i => i is Folder) ?? Activator.CreateInstance(type, new object[] { "Temp" });
+                    instance ??= fileSystemItems.FirstOrDefault(i => i is Folder) ??
+                                 Activator.CreateInstance(type, new object[] { "Temp" });
                     return method.Invoke(instance, paramValues);
                 }
             }
@@ -60,7 +62,8 @@ namespace AvaloniaApplication4.Services
             }
         }
 
-        private object? ConvertParameter(MethodParameter param, Type classType, MethodInfo method, ObservableCollection<FileSystemItem> fileSystemItems)
+        private object? ConvertParameter(MethodParameter param, Type classType, MethodInfo method,
+            ObservableCollection<FileSystemItem> fileSystemItems)
         {
             string value = param.Value;
             Type type = param.Type;
