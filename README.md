@@ -9,3 +9,5 @@
 (вариант 4 - базовый класс: элемент файловой системы)
 ### [Task 3](https://github.com/cutymurphy/AvaloniaProjects/tree/master/AvaloniaApplication3)
 (вариант 1 - "Остановка")
+### [Task 4](https://github.com/cutymurphy/AvaloniaProjects/tree/master/FileSystemReflectionSolution)
+(вариант 4 - базовый класс: элемент файловой системы)
