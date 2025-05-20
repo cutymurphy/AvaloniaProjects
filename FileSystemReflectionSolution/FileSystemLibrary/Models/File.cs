@@ -9,9 +9,12 @@ namespace FileSystemLibrary.Models
 
         public File(string name, long size) : base(name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Имя файла не может быть пустым.");
             if (!HasExtension(name))
-                throw new ArgumentException("Имя файла должно содержать расширение (например, .txt, .png).");
-            if (size < 0) throw new ArgumentException("Размер файла не может быть отрицательным.");
+                throw new ArgumentException("Имя файла должно содержать расширение, например, .txt или .png.");
+            if (size < 0)
+                throw new ArgumentException("Размер файла не может быть отрицательным.");
             FileSize = size;
         }
 
@@ -25,10 +28,10 @@ namespace FileSystemLibrary.Models
 
         public void Delete(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Имя файла для удаления не может быть пустым.");
             if (ParentFolder == null)
-                throw new InvalidOperationException("Файл не находится в папке.");
-            if (Name != name)
-                throw new InvalidOperationException($"Имя файла '{name}' не совпадает с текущим файлом '{Name}'.");
+                throw new InvalidOperationException("Файл не находится в папке и не может быть удален.");
             ParentFolder.Remove(this);
         }
 

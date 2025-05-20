@@ -21,14 +21,18 @@ namespace AvaloniaApplication4.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Ошибка загрузки DLL: {ex.Message}");
+                throw new Exception($"Не удалось загрузить DLL: {ex.Message}");
             }
         }
 
         public List<MethodInfo> GetMethods(Type type)
         {
             return type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Where(m => m.DeclaringType == type && !m.Name.StartsWith("get_") && !m.Name.StartsWith("set_"))
+                .Where(m => m.DeclaringType == type
+                            && !m.Name.StartsWith("get_")
+                            && !m.Name.StartsWith("set_")
+                            && !m.Name.StartsWith("add_")
+                            && !m.Name.StartsWith("remove_"))
                 .ToList();
         }
 
@@ -58,7 +62,7 @@ namespace AvaloniaApplication4.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Ошибка вызова метода: {ex.Message}");
+                throw new Exception($"Ошибка при вызове метода: {ex.Message}");
             }
         }
 
@@ -68,7 +72,8 @@ namespace AvaloniaApplication4.Services
             string value = param.Value;
             Type type = param.Type;
 
-            if (string.IsNullOrEmpty(value) && !type.IsValueType) return null;
+            if (string.IsNullOrEmpty(value) && !type.IsValueType)
+                throw new ArgumentException("Значение параметра не может быть пустым.");
             if (type == typeof(string)) return value;
             if (type == typeof(int)) return int.Parse(value);
             if (type == typeof(long)) return long.Parse(value);
@@ -81,7 +86,7 @@ namespace AvaloniaApplication4.Services
                 }
             }
 
-            throw new NotSupportedException($"Тип параметра {type.Name} не поддерживается.");
+            throw new NotSupportedException($"Тип параметра '{type.Name}' не поддерживается.");
         }
 
         public Folder? FindFolderByPath(ObservableCollection<FileSystemItem> fileSystemItems, string path)

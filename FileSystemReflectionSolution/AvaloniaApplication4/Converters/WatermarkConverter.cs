@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace AvaloniaApplication4
+namespace AvaloniaApplication4.Converters
 {
     public class WatermarkConverter : IValueConverter
     {

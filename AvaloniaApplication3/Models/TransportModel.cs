@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Timers;
 
 namespace AvaloniaApplication3.Models
@@ -49,12 +48,12 @@ namespace AvaloniaApplication3.Models
 
         private void UpdateObjects(object? sender, ElapsedEventArgs e)
         {
-            foreach (var vehicle in Vehicles.ToList())
+            foreach (var vehicle in Vehicles)
             {
                 vehicle.Update();
             }
 
-            foreach (var passenger in Passengers.ToList())
+            foreach (var passenger in Passengers)
             {
                 passenger.Update();
             }
@@ -69,7 +68,7 @@ namespace AvaloniaApplication3.Models
 
         private void SpawnPassenger(object? sender, ElapsedEventArgs e)
         {
-            if (Passengers.Count >= 8) return;
+            if (Passengers.Count >= 10) return;
 
             bool spawnWaitingPassenger = _random.NextDouble() < 0.6;
             Type passengerType = spawnWaitingPassenger ? typeof(WaitingPassenger) : typeof(RegularPassenger);
@@ -88,6 +87,8 @@ namespace AvaloniaApplication3.Models
             Passengers.Remove(passenger);
         }
 
+        // метод для освобождения ресурсов (в данном случае таймеров),
+        // таймеры нужно останавливать и освобождать при завершении работы
         public void Dispose()
         {
             _updateTimer.Stop();

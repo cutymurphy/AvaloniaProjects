@@ -47,7 +47,6 @@ namespace AvaloniaApplication3.Models
                 return;
             }
 
-            // Move toward the stop
             X += X < _targetStop.X ? _speed : -_speed;
         }
     }

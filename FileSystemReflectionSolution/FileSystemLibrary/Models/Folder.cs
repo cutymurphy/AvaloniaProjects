@@ -15,10 +15,11 @@ namespace FileSystemLibrary.Models
 
         public Folder(string name) : base(name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentException("Имя папки не может быть пустым.");
             Items.CollectionChanged += (s, e) =>
             {
                 OnPropertyChanged(nameof(Size));
-                // Уведомляем родительские папки о пересчете размера
                 NotifyParentFolders();
             };
         }
@@ -29,7 +30,10 @@ namespace FileSystemLibrary.Models
 
         public void Add(FileSystemItem item)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (item == null)
+                throw new ArgumentNullException("Элемент не может быть пустым.");
+            if (string.IsNullOrEmpty(item.Name))
+                throw new ArgumentException("Имя элемента не может быть пустым.");
             if (Items.Any(i => i.Name == item.Name))
                 throw new InvalidOperationException($"Элемент с именем '{item.Name}' уже существует в папке '{Name}'.");
 
@@ -39,9 +43,10 @@ namespace FileSystemLibrary.Models
 
         public void Remove(FileSystemItem item)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (item == null)
+                throw new ArgumentNullException("Элемент не может быть пустым.");
             if (!Items.Contains(item))
-                throw new InvalidOperationException($"Элемент '{item.Name}' не найден в папке '{Name}'.");
+                throw new InvalidOperationException($"Элемент с именем '{item.Name}' не найден в папке '{Name}'.");
 
             Items.Remove(item);
             item.ParentFolder = null;

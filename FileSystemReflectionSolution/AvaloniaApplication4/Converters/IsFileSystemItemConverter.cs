@@ -3,7 +3,7 @@ using System.Globalization;
 using Avalonia.Data.Converters;
 using FileSystemLibrary.Models;
 
-namespace AvaloniaApplication4
+namespace AvaloniaApplication4.Converters
 {
     public class IsFileSystemItemConverter : IValueConverter
     {
